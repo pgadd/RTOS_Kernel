@@ -8,7 +8,7 @@
         "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32xxxx/Include"
       ],
       "defines": ["STM32xxxx"],
-      "compilerPath": "/usr/bin/arm-none-eabi-gcc",
+      "compilerPath": "/opt/homebrew/bin/arm-none-eabi-gcc",
       "cStandard": "c11"
     }
   ],
