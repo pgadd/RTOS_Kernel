@@ -5,7 +5,7 @@
       "includePath": [
         "${workspaceFolder}/**",
         "${workspaceFolder}/Drivers/CMSIS/Include",
-        "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32xxxx/Include"
+        "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32G4xx/Include"
       ],
       "defines": ["STM32xxxx"],
       "compilerPath": "/opt/homebrew/bin/arm-none-eabi-gcc",
