@@ -10,7 +10,7 @@ CFLAGS = $(CPU) -O0 -g3 -Wall -Wextra \
          -IDrivers/CMSIS/Device/ST/STM32G4xx/Include \
          -DSTM32G474xx
 
-LDFLAGS = $(CPU) -Tstm32g474re.ld --specs=nano.specs -lc -lgcc -nostdlib
+LDFLAGS = $(CPU) -Tstm32g474re.ld -lgcc -nostdlib
 
 SRC = Core/Src/main.c
 
