@@ -7,6 +7,8 @@ TCB_t *current_tcb;
 TCB_t TCB_array[MAX_TASKS];
 uint32_t task_stacks[MAX_TASKS][STACK_SIZE];
 
+
+
 void os_kernel_init(void) {
     // Clear out the TCB array
     for (int i = 0; i < MAX_TASKS; i++) {
@@ -47,4 +49,14 @@ int os_task_create(void (*task_function)(void), uint8_t priority) {
     
     task_count++;
     return 1;
+}
+
+// Starts the timer to fire an interrupt every 1 millisecond
+SysTick_Config(SystemCoreClock / 1000);s
+
+void SysTick_Handler(void) {
+    // 1. We could update system time or unblock delayed tasks here
+    
+    // 2. Trigger the PendSV exception to handle the actual context switch
+    SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk; 
 }
