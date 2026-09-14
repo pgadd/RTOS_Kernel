@@ -52,7 +52,7 @@ int os_task_create(void (*task_function)(void), uint8_t priority) {
 }
 
 // Starts the timer to fire an interrupt every 1 millisecond
-SysTick_Config(SystemCoreClock / 1000);s
+SysTick_Config(SystemCoreClock / 1000);sd
 
 void SysTick_Handler(void) {
     // 1. We could update system time or unblock delayed tasks here
