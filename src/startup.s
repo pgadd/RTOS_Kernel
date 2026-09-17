@@ -12,6 +12,22 @@ g_pfnVectors:
     .word _estack
     .word Reset_Handler
 
+    /* Cortex-M system exceptions */
+    .word 0                    /* NMI */
+    .word 0                    /* HardFault */
+    .word 0                    /* MemManage */
+    .word 0                    /* BusFault */
+    .word 0                    /* UsageFault */
+    .word 0                    /* Reserved */
+    .word 0                    /* Reserved */
+    .word 0                    /* Reserved */
+    .word 0                    /* Reserved */
+    .word 0                    /* SVCall */
+    .word 0                    /* DebugMonitor */
+    .word 0                    /* Reserved */
+    .word 0                    /* PendSV */
+    .word SysTick_Handler      /* SysTick */
+
 .size g_pfnVectors, . - g_pfnVectors
 
 
