@@ -5,11 +5,11 @@
 #define GPIOA_MODER (*(volatile uint32_t *)0x48000000)
 #define GPIOA_ODR   (*(volatile uint32_t *)0x48000014)
 
-static void delay(void)
+volatile uint32_t tick_count = 0;
+
+void SysTick_Handler(void)
 {
-    for (volatile uint32_t i = 0; i < 1000000; i++)
-    {
-    }
+    tick_count++;
 }
 
 int main(void)
@@ -23,14 +23,6 @@ int main(void)
 
     while (1)
     {
-        /* Turn LED on */
         GPIOA_ODR |= (1u << 5);
-
-        delay();
-
-        /* Turn LED off */
-        GPIOA_ODR &= ~(1u << 5);
-
-        delay();
     }
 }
