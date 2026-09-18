@@ -5,6 +5,9 @@
 #define GPIOA_MODER (*(volatile uint32_t *)0x48000000)
 #define GPIOA_ODR   (*(volatile uint32_t *)0x48000014)
 
+#define SYST_CSR (*(volatile uint32_t *)0xE000E010)
+#define SYST_RVR (*(volatile uint32_t *)0xE000E014)
+
 volatile uint32_t tick_count = 0;
 
 void SysTick_Handler(void)
@@ -20,6 +23,12 @@ int main(void)
     /* Configure PA5 as a general-purpose output */
     GPIOA_MODER &= ~(3u << 10);
     GPIOA_MODER |=  (1u << 10);
+
+     /* Configure SysTick */
+    SYST_RVR = 9999;
+    SYST_CSR = (1u << 0) |   /* ENABLE */
+               (1u << 1) |   /* TICKINT */
+               (1u << 2);    /* CLKSOURCE */
 
     while (1)
     {
