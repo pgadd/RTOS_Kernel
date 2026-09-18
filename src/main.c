@@ -25,13 +25,20 @@ int main(void)
     GPIOA_MODER |=  (1u << 10);
 
      /* Configure SysTick */
-    SYST_RVR = 9999;
+    SYST_RVR = 15999;
     SYST_CSR = (1u << 0) |   /* ENABLE */
                (1u << 1) |   /* TICKINT */
                (1u << 2);    /* CLKSOURCE */
 
+    uint32_t last_tick = 0;
+
     while (1)
     {
-        GPIOA_ODR |= (1u << 5);
+        if ((tick_count - last_tick) >= 100)
+        {
+            last_tick = tick_count;
+
+            GPIOA_ODR ^= (1u << 5);
+        }
     }
 }
