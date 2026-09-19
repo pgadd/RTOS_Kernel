@@ -8,26 +8,40 @@
 #define SYST_CSR (*(volatile uint32_t *)0xE000E010)
 #define SYST_RVR (*(volatile uint32_t *)0xE000E014)
 
+#define MAX_TIMERS 4
+
 volatile uint32_t tick_count = 0;
-volatile uint32_t led_timer_expired = 0;
 
 typedef struct {
     uint32_t next;
     uint32_t period;
+    volatile uint32_t expired;
+    uint32_t active;
 } Timer;
 
-Timer led_timer = {
-    .next = 500,
-    .period = 500
+Timer timers[MAX_TIMERS] = {
+    {
+        .next = 500,
+        .period = 500,
+        .expired = 0,
+        .active = 1
+    }
 };
 
 void SysTick_Handler(void)
 {
     tick_count++;
 
-    if (tick_count >= led_timer.next) {
-        led_timer_expired = 1;
-        led_timer.next += led_timer.period;
+    for (int i = 0; i < MAX_TIMERS; i++)
+    {
+        if (!timers[i].active)
+            continue;
+
+        if (tick_count >= timers[i].next)
+        {
+            timers[i].expired = 1;
+            timers[i].next += timers[i].period;
+        }
     }
 }
 
@@ -48,8 +62,8 @@ int main(void)
 
 
     while (1) {
-        if (led_timer_expired) {
-            led_timer_expired = 0;
+        if (timers[0].expired) {
+            timers[0].expired = 0;
 
             GPIOA_ODR ^= (1u << 5);
         }
