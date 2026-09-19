@@ -11,22 +11,44 @@
 #define MAX_TIMERS 4
 
 volatile uint32_t tick_count = 0;
+volatile uint32_t heartbeat = 0;
 
 typedef struct {
     uint32_t next;
     uint32_t period;
     volatile uint32_t expired;
     uint32_t active;
+    void (*callback)(void);
 } Timer;
+
+
+//Callback functions
+void led_toggle(void) {
+    GPIOA_ODR ^= (1u << 5);
+}
+
+void heartbeat_update(void) {
+    heartbeat++;
+}
+
 
 Timer timers[MAX_TIMERS] = {
     {
         .next = 500,
         .period = 500,
         .expired = 0,
-        .active = 1
+        .active = 1,
+        .callback = led_toggle
+    },
+    {
+        .next = 1000,
+        .period = 1000,
+        .expired = 0,
+        .active = 1,
+        .callback = heartbeat_update
     }
 };
+
 
 void SysTick_Handler(void)
 {
@@ -45,6 +67,7 @@ void SysTick_Handler(void)
     }
 }
 
+
 int main(void)
 {
     /* Enable GPIOA clock */
@@ -62,12 +85,18 @@ int main(void)
 
 
     while (1) {
-        if (timers[0].expired) {
-            timers[0].expired = 0;
+        for (int i = 0; i < MAX_TIMERS; i++) {
+            if (timers[i].expired) {
+                timers[i].expired = 0;
 
-            GPIOA_ODR ^= (1u << 5);
+                if (timers[i].callback) {
+                    timers[i].callback();
+                }
+            }
         }
 
         __asm volatile ("wfi");
+
     }
+
 }
