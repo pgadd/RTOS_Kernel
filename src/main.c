@@ -9,10 +9,26 @@
 #define SYST_RVR (*(volatile uint32_t *)0xE000E014)
 
 volatile uint32_t tick_count = 0;
+volatile uint32_t led_timer_expired = 0;
+
+typedef struct {
+    uint32_t next;
+    uint32_t period;
+} Timer;
+
+Timer led_timer = {
+    .next = 500,
+    .period = 500
+};
 
 void SysTick_Handler(void)
 {
     tick_count++;
+
+    if (tick_count >= led_timer.next) {
+        led_timer_expired = 1;
+        led_timer.next += led_timer.period;
+    }
 }
 
 int main(void)
@@ -30,15 +46,14 @@ int main(void)
                (1u << 1) |   /* TICKINT */
                (1u << 2);    /* CLKSOURCE */
 
-    uint32_t last_tick = 0;
 
-    while (1)
-    {
-        if ((tick_count - last_tick) >= 100)
-        {
-            last_tick = tick_count;
+    while (1) {
+        if (led_timer_expired) {
+            led_timer_expired = 0;
 
             GPIOA_ODR ^= (1u << 5);
         }
+
+        __asm volatile ("wfi");
     }
 }
