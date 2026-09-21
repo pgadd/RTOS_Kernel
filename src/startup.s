@@ -22,7 +22,7 @@ g_pfnVectors:
     .word 0                    /* Reserved */
     .word 0                    /* Reserved */
     .word 0                    /* Reserved */
-    .word 0                    /* SVCall */
+    .word SVC_Handler          /* SVCall */
     .word 0                    /* DebugMonitor */
     .word 0                    /* Reserved */
     .word 0                    /* PendSV */
@@ -78,6 +78,21 @@ zero_bss_word:
 call_main:
 
     bl main
+
+
+.global SVC_Handler
+.type SVC_Handler, %function
+
+SVC_Handler:
+    ldr r0, =led_task_tcb
+    ldr r0, [r0, #4]
+
+    ldmia r0!, {r4-r11}
+
+    msr psp, r0
+
+    ldr lr, =0xFFFFFFFD
+    bx lr
 
 hang:
     b hang

@@ -36,32 +36,47 @@ void led_task(void)
     while (1)
     {
         GPIOA_ODR ^= (1u << 5);
-        task_yield();
+        //task_yield();
     }
 }
+
 
 void heartbeat_task(void){
     while (1)
     {
         heartbeat++;
-        task_yield();
+        //task_yield();
     }
 }
 
-void task_init(TCB *tcb, uint32_t *stack) {
+
+void task_init(TCB *tcb, uint32_t *stack)
+{
     uint32_t *sp = &stack[TASK_STACK_SIZE];
 
-    *(--sp) = 0x01000000;          // xPSR
-    *(--sp) = ((uint32_t)tcb->function); // PC
-    *(--sp) = 0xFFFFFFFD;          // LR
-    *(--sp) = 0;                   // R12
-    *(--sp) = 0;                   // R3
-    *(--sp) = 0;                   // R2
-    *(--sp) = 0;                   // R1
-    *(--sp) = 0;                   // R0
+    /* Software-saved registers R4-R11 */
+    *(--sp) = 0;    // R11
+    *(--sp) = 0;    // R10
+    *(--sp) = 0;    // R9
+    *(--sp) = 0;    // R8
+    *(--sp) = 0;    // R7
+    *(--sp) = 0;    // R6
+    *(--sp) = 0;    // R5
+    *(--sp) = 0;    // R4
+
+    /* Hardware-saved exception frame */
+    *(--sp) = 0x01000000;                 // xPSR
+    *(--sp) = (uint32_t)tcb->function;     // PC
+    *(--sp) = 0xFFFFFFFD;                  // LR
+    *(--sp) = 0;                           // R12
+    *(--sp) = 0;                           // R3
+    *(--sp) = 0;                           // R2
+    *(--sp) = 0;                           // R1
+    *(--sp) = 0;                           // R0
 
     tcb->stack_pointer = sp;
 }
+
 
 uint32_t led_task_stack[TASK_STACK_SIZE];
 uint32_t heartbeat_task_stack[TASK_STACK_SIZE];
@@ -99,6 +114,7 @@ Timer timers[MAX_TIMERS] = {
 };
 
 
+//Functon that contorls the SysTick timer. 
 void SysTick_Handler(void)
 {
     tick_count++;
@@ -136,20 +152,11 @@ int main(void)
     task_init(&led_task_tcb, led_task_stack);
     task_init(&heartbeat_task_tcb, heartbeat_task_stack);   
 
+    __asm volatile ("svc 0");
 
-    while (1) {
-        for (int i = 0; i < MAX_TIMERS; i++) {
-            if (timers[i].expired) {
-                timers[i].expired = 0;
-
-                if (timers[i].callback) {
-                    timers[i].callback();
-                }
-            }
-        }
-
+    while (1)
+    {
         __asm volatile ("wfi");
-
     }
 
 }
