@@ -31,12 +31,18 @@ typedef struct {
 
 
 //Callback functions
+
+void task_yield(void)
+{
+    __asm volatile ("svc 0");
+}
+
 void led_task(void)
 {
     while (1)
     {
         GPIOA_ODR ^= (1u << 5);
-        //task_yield();
+        task_yield();
     }
 }
 
@@ -93,6 +99,9 @@ TCB heartbeat_task_tcb = {
     .stack_pointer = &heartbeat_task_stack[TASK_STACK_SIZE],
     .state = 0
 };
+
+TCB *current_task;
+TCB *next_task;
 
 
 
@@ -151,6 +160,8 @@ int main(void)
     
     task_init(&led_task_tcb, led_task_stack);
     task_init(&heartbeat_task_tcb, heartbeat_task_stack);   
+
+    current_task = &led_task_tcb;
 
     __asm volatile ("svc 0");
 
