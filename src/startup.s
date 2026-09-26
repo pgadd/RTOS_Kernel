@@ -79,7 +79,12 @@ call_main:
 
     bl main
 
+hang:
+    b hang
 
+.size Reset_Handler, . - Reset_Handler
+
+.section .text.SVC_Handler
 .global SVC_Handler
 .type SVC_Handler, %function
 
@@ -94,7 +99,4 @@ SVC_Handler:
     ldr lr, =0xFFFFFFFD
     bx lr
 
-hang:
-    b hang
-
-.size Reset_Handler, . - Reset_Handler
+.size SVC_Handler, . - SVC_Handler

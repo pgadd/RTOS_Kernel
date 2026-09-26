@@ -1,3 +1,19 @@
+//Compile command:
+/*
+arm-none-eabi-gcc -g \                                                 
+  -mcpu=cortex-m4 \
+  -mthumb \
+  -ffreestanding \
+  -nostdlib \
+  -Wall \
+  -Wextra \
+  -T linker.ld \
+  src/startup.s \
+  src/main.c \
+  -o build/project1.elf
+*/
+
+
 #include <stdint.h>
 
 #define RCC_AHB2ENR (*(volatile uint32_t *)0x4002104C)
